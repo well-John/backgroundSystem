@@ -64,4 +64,9 @@ public class TeacherServiceImpl extends BaseServiceImpl<Teacher, TeacherExample>
 		return teacherMapper.selectByExample(example);
 	}
 
+	@Override
+	public Integer deleteByIds(List<Integer> list) {
+		return teacherMapper.deleteByIds(list);
+	}
+
 }

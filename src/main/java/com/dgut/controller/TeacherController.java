@@ -2,6 +2,7 @@ package com.dgut.controller;
 
 import com.dgut.entity.*;
 import com.dgut.service.TeacherService;
+import com.dgut.utils.StringUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -58,20 +59,6 @@ public class TeacherController {
 				return Msg.error("注册失败");
 	}
 	
-	@RequestMapping("selectAllTeacher")
-	@ResponseBody
-	public Msg selectAllTeacher(@RequestParam(value="pageNum",defaultValue="1")Integer pageNum, String subject, String university, String area, Integer identity, Integer sex){
-		System.out.println("subject="+subject+" university="+university+" area="+area+" identity="+identity+" sex="+sex);
-		PageHelper.startPage(pageNum, PAGESIZE);
-		List<Teacher> list=teacherService.selecTeachersByExample(subject, university, area, identity, sex);
-		System.out.println("list:"+list);
-		if(list!=null&&!list.isEmpty()){
-			PageInfo<Teacher> pageInfo=new PageInfo<>(list);
-			return Msg.success("").add("pageInfo", pageInfo);
-		}
-		return Msg.error("");
-	}
-	
 	@RequestMapping("selectTeacherInfo")
 	@ResponseBody
 	public Msg selectTeacherById(@RequestParam(value="id",required=true)Integer id){
@@ -81,5 +68,25 @@ public class TeacherController {
 			return Msg.error("所查询的教师信息不存在！！！");
 		}
 		return Msg.success("").add("teacher", teacher);
+	}
+
+	@RequestMapping("selectAllTeacher")
+	@ResponseBody
+	public Result selectAllStudent(Integer page,Integer limit,HttpServletRequest request){
+		PageHelper.startPage(page,limit);
+		List<Teacher> list = teacherService.selectAll();
+		PageInfo<Teacher> pageInfo = new PageInfo<>(list);
+		return Result.success("",  pageInfo.getTotal(),list);
+	}
+
+	@RequestMapping("deleteByIds")
+	@ResponseBody
+	public Msg delete(String ids){
+
+		List<Integer> list = StringUtil.splitIds(ids);
+		if(teacherService.deleteByIds(list) != 0){
+			return Msg.success("");
+		}
+		return Msg.error("");
 	}
 }

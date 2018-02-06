@@ -13,4 +13,5 @@ public interface TeacherService extends BaseService<Teacher, TeacherExample> {
 	
 	public List<Teacher> selecTeachersByExample(String subject, String university, String area, Integer identity, Integer sex);
 
+    Integer deleteByIds(List<Integer> list);
 }

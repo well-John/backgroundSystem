@@ -12,10 +12,10 @@ import java.util.Map;
 public class Result extends HashMap<String,Object>{
      private Integer code;
      private String msg;
-     private Integer count;
+     private Long count;
      private Object data;
 
-     public static Result success(String msg,Integer count,Object object){
+     public static Result success(String msg,Long count,Object object){
          Result result = new Result();
          result.put("code",0);
          result.put("count",count);

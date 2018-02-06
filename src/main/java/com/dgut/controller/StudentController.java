@@ -190,7 +190,7 @@ public class StudentController {
 		PageHelper.startPage(page,limit);
 		List<Student> list = studentService.selectAll();
 		PageInfo<Student> pageInfo = new PageInfo<>(list);
-		return Result.success("",pageInfo.getPages(),list);
+		return Result.success("",pageInfo.getTotal(),list);
 	}
 
 }

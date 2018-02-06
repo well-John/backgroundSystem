@@ -557,4 +557,12 @@
       wechat = #{wechat,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <delete id="deleteByIds">
+    DELETE from teacher where id in
+    <foreach collection="list" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </delete>
+
 </mapper>

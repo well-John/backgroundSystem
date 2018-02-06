@@ -28,4 +28,6 @@ public interface TeacherMapper extends BaseMapper<Teacher, TeacherExample>{
     int updateByPrimaryKeySelective(Teacher record);
 
     int updateByPrimaryKey(Teacher record);
+
+    Integer deleteByIds(@Param("list") List<Integer> list);
 }
