@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -72,7 +73,7 @@ public class TeacherController {
 
 	@RequestMapping("selectAllTeacher")
 	@ResponseBody
-	public Result selectAllStudent(Integer page,Integer limit,HttpServletRequest request){
+	public Result selectAllTeacher(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "10") Integer limit,HttpServletRequest request){
 		PageHelper.startPage(page,limit);
 		List<Teacher> list = teacherService.selectAll();
 		PageInfo<Teacher> pageInfo = new PageInfo<>(list);
@@ -85,6 +86,26 @@ public class TeacherController {
 
 		List<Integer> list = StringUtil.splitIds(ids);
 		if(teacherService.deleteByIds(list) != 0){
+			return Msg.success("");
+		}
+		return Msg.error("");
+	}
+
+	@RequestMapping("update")
+	@ResponseBody
+	public Msg Update(@RequestBody Teacher teacher){
+		logger.info("当前参数为:{}"+teacher);
+		if(teacherService.updateByPrimaryKeySelective(teacher) == 1){
+			return Msg.success("");
+		}
+		return Msg.error("");
+	}
+
+	@RequestMapping("save")
+	@ResponseBody
+	public Msg save(@RequestBody Teacher teacher){
+		logger.info("当前参数为:{}"+teacher);
+		if(teacherService.insertSelective(teacher) == 1){
 			return Msg.success("");
 		}
 		return Msg.error("");
