@@ -5,9 +5,11 @@ import com.dgut.entity.Teacher;
 import com.dgut.entity.TeacherExample;
 import com.dgut.entity.TeacherExample.Criteria;
 import com.dgut.service.TeacherService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -67,6 +69,22 @@ public class TeacherServiceImpl extends BaseServiceImpl<Teacher, TeacherExample>
 	@Override
 	public Integer deleteByIds(List<Integer> list) {
 		return teacherMapper.deleteByIds(list);
+	}
+
+	@Override
+	public List<Teacher> selectTeacherByExample(Date start, Date end, String name) {
+		TeacherExample example=new TeacherExample();
+		Criteria criteria=example.createCriteria();
+		if(start!=null){
+			criteria.andRegisterTimeGreaterThan(start);
+		}
+		if(end!=null){
+			criteria.andRegisterTimeLessThanOrEqualTo(end);
+		}
+		if(StringUtils.isNotBlank(name)){
+			criteria.andNameLike("%"+name.trim()+"%");
+		}
+		return teacherMapper.selectByExample(example);
 	}
 
 }

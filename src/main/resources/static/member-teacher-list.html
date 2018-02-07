@@ -13,6 +13,7 @@
     <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
+    <script type="text/javascript" src="./js/My.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -32,13 +33,13 @@
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
     </div>
     <div class="x-body">
-      <div class="layui-row">
-        <form class="layui-form layui-col-md12 x-so">
+      <div id="demo-reload" class="layui-row">
+        <div id="form" class="layui-form layui-col-md12 x-so">
           <input class="layui-input" placeholder="开始日" name="start" id="start">
           <input class="layui-input" placeholder="截止日" name="end" id="end">
           <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
-          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
-        </form>
+          <button id="btn" class="layui-btn"  lay-submit="" lay-filter="sreach" data-type="reload"><i class="layui-icon">&#xe615;</i></button>
+        </div>
       </div>
       <xblock>
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
@@ -185,29 +186,42 @@
             $(".layui-form-checked").not('.header').parents('tr').remove();
         });
       }*/
+      layui.use('laydate', function(){
+          var laydate = layui.laydate;
+
+          //执行一个laydate实例
+          laydate.render({
+              elem: '#start' //指定元素
+          });
+
+          //执行一个laydate实例
+          laydate.render({
+              elem: '#end' //指定元素
+          });
+      });
       layui.use('table', function(){
           var table = layui.table;
 
-          table.render({
-              elem: '#test'
-              ,url:'teacher/selectAllTeacher'
-              ,cellMinWidth: 50
-              ,cols: [[
-                  {checkbox: true, fixed: true}
-                  ,{field:'id', title: 'ID', width:40, align: 'center',sort: true}
-                  ,{field:'name', title: '真实姓名',align: 'center'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-                  ,{field:'sex', title: '性别',align: 'center',templet: function(d){ console.log(d); if(d.sex == 1) return '女'; return '男'}}
-                  ,{field:'email', title: '邮箱', align: 'center'} //单元格内容水平居中
-                  ,{field:'phone', title: '手机',align: 'center'}
-                  ,{field:'university', title: '就读大学',align: 'center'}
-                  ,{field:'lastIp', title: '上次登录IP', align: 'center'} //单元格内容水平居中
-                  ,{field:'lastTime', title: '上次登录时间',align: 'center'}
-                  ,{field:'balance', title: '财富', sort: true, align: 'center'}
-                  ,{fixed:'right',  width:150, align:'center',toolbar:'#barDemo'}
-              ]]
-              ,page:true
-          });
-
+              table.render({
+                  elem: '#test'
+                  ,url:'teacher/selectAllTeacher'
+                  ,cellMinWidth: 50
+                  ,id:'testReload'
+                  ,cols: [[
+                      {checkbox: true, fixed: true}
+                      ,{field:'id', title: 'ID', width:40, align: 'center',sort: true}
+                      ,{field:'name', title: '真实姓名',align: 'center'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                      ,{field:'sex', title: '性别',align: 'center',templet: function(d){ console.log(d); if(d.sex == 1) return '女'; return '男'}}
+                      ,{field:'email', title: '邮箱', align: 'center'} //单元格内容水平居中
+                      ,{field:'phone', title: '手机',align: 'center'}
+                      ,{field:'university', title: '就读大学',align: 'center'}
+                      ,{field:'lastIp', title: '上次登录IP', align: 'center'} //单元格内容水平居中
+                      ,{field:'lastTime', title: '上次登录时间',align: 'center',templet: function(d){ console.log(d); return getMyDate(d.lastTime);}}
+                      ,{field:'balance', title: '财富', sort: true, align: 'center'}
+                      ,{fixed:'right',  width:150, align:'center',toolbar:'#barDemo'}
+                  ]]
+                  ,page:true
+              });
           table.on('tool(test)',function (obj) {
               var data = obj.data; //获得当前行数据
               var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
@@ -245,8 +259,39 @@
               }
           });
 
+          var $ = layui.$, active = {
+              reload: function(){
+                  //执行重载
+                  table.reload('testReload', {
+                      where: {
+                          start:"2018-02-02"
+                      },page:{
+                          curr:1
+                      }
+                  });
+              }
+          };
+
+          $('#btn').on('click', function(){
+              var type = $(this).data('type');
+              console.log(type);
+              active[type] ? active[type].call(this) : '';
+          });
+
+
 
       });
+
+      /*$(function(){
+          $(document).on("click","#btn",function(){
+              var data = {
+                  start:"2017-01-02"
+              };
+              /!*data =  $("#form").serialize();
+              console.log(data);*!/
+              reload(data);
+          });
+      });*/
 
       function getcheckData (){
           table = layui.table;
@@ -261,11 +306,8 @@
           return data.length;
       }
 
-      function reload() {
-          table = layui.table;
-          table.reload('test',{
-              url:'teacher/selectAllTeacher'
-          });
+      function reload(data) {
+          console.log(layui.table)
       }
      /* var active = {
           getCheckData: function(){ //获取选中数据

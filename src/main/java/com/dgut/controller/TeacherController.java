@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,14 +72,14 @@ public class TeacherController {
 		return Msg.success("").add("teacher", teacher);
 	}
 
-	@RequestMapping("selectAllTeacher")
+	/*@RequestMapping("selectAllTeacher")
 	@ResponseBody
 	public Result selectAllTeacher(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "10") Integer limit,HttpServletRequest request){
 		PageHelper.startPage(page,limit);
 		List<Teacher> list = teacherService.selectAll();
 		PageInfo<Teacher> pageInfo = new PageInfo<>(list);
 		return Result.success("",  pageInfo.getTotal(),list);
-	}
+	}*/
 
 	@RequestMapping("deleteByIds")
 	@ResponseBody
@@ -109,5 +110,14 @@ public class TeacherController {
 			return Msg.success("");
 		}
 		return Msg.error("");
+	}
+
+	@RequestMapping("/selectAllTeacher")
+	@ResponseBody
+	public Result selectByExample(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer limit, @DateTimeFormat(pattern = "yyyy-MM-dd") Date start,@DateTimeFormat(pattern = "yyyy-MM-dd") Date end, String username){
+		PageHelper.startPage(page,limit);
+		List<Teacher> list = teacherService.selectTeacherByExample(start,end,username);
+		PageInfo<Teacher> pageInfo = new PageInfo<>(list);
+		return Result.success("",  pageInfo.getTotal(),list);
 	}
 }
